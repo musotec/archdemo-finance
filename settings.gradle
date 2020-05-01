@@ -1,2 +1,6 @@
+include ':theme'
+include ':repos'
+include ':database'
+include ':core'
 include ':app'
 rootProject.name = "Demo Android Architecture App"
