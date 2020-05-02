@@ -50,133 +50,168 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/guideline">
 
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline_row_one"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintGuide_percent="0.25"
+            android:orientation="horizontal" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline_row_two"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintGuide_percent="0.5"
+            android:orientation="horizontal" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline_row_three"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintGuide_percent="0.75"
+            android:orientation="horizontal" />
+
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline_col_one"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintGuide_percent="0.33"
+            android:orientation="vertical" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline_col_two"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintGuide_percent="0.66"
+            android:orientation="vertical" />
+
         <com.google.android.material.button.MaterialButton
             android:id="@+id/pin_key_1"
             style="@style/NumberPadButton"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="0dp"
-            android:layout_marginTop="16dp"
-            android:insetTop="0dp"
-            android:insetBottom="0dp"
-            android:padding="0dp"
             android:text="1"
             app:layout_constraintDimensionRatio="h,1:1"
-            app:layout_constraintEnd_toStartOf="@+id/pin_key_2"
+            app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintBottom_toTopOf="@+id/guideline_row_one"
+            app:layout_constraintEnd_toStartOf="@+id/guideline_col_one" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/pin_key_2"
             style="@style/NumberPadButton"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="0dp"
             android:text="2"
             app:layout_constraintDimensionRatio="h,1:1"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@+id/pin_key_1" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/guideline_col_one"
+            app:layout_constraintBottom_toTopOf="@+id/guideline_row_one"
+            app:layout_constraintEnd_toStartOf="@+id/guideline_col_two" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/pin_key_3"
             style="@style/NumberPadButton"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="0dp"
             android:text="3"
             app:layout_constraintDimensionRatio="h,1:1"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/pin_key_2"
-            app:layout_constraintTop_toTopOf="@+id/pin_key_2" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/guideline_col_two"
+            app:layout_constraintBottom_toTopOf="@+id/guideline_row_one"
+            app:layout_constraintEnd_toEndOf="parent"/>
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/pin_key_4"
             style="@style/NumberPadButton"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="0dp"
             android:text="4"
-            app:layout_constraintBottom_toTopOf="@+id/pin_key_7"
             app:layout_constraintDimensionRatio="h,1:1"
-            app:layout_constraintStart_toStartOf="@+id/pin_key_1"
-            app:layout_constraintTop_toBottomOf="@+id/pin_key_1" />
+            app:layout_constraintTop_toTopOf="@+id/guideline_row_one"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toTopOf="@+id/guideline_row_two"
+            app:layout_constraintEnd_toStartOf="@+id/guideline_col_one" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/pin_key_5"
             style="@style/NumberPadButton"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="0dp"
             android:text="5"
-            app:layout_constraintBottom_toTopOf="@+id/pin_key_9"
             app:layout_constraintDimensionRatio="h,1:1"
-            app:layout_constraintStart_toStartOf="@+id/pin_key_2"
-            app:layout_constraintTop_toBottomOf="@+id/pin_key_2" />
+            app:layout_constraintTop_toTopOf="@+id/guideline_row_one"
+            app:layout_constraintStart_toStartOf="@+id/guideline_col_one"
+            app:layout_constraintBottom_toTopOf="@+id/guideline_row_two"
+            app:layout_constraintEnd_toStartOf="@+id/guideline_col_two"/>
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/pin_key_6"
             style="@style/NumberPadButton"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="0dp"
             android:text="6"
-            app:layout_constraintBottom_toTopOf="@+id/pin_key_9"
             app:layout_constraintDimensionRatio="h,1:1"
-            app:layout_constraintStart_toStartOf="@+id/pin_key_3"
-            app:layout_constraintTop_toBottomOf="@+id/pin_key_3" />
+            app:layout_constraintTop_toTopOf="@+id/guideline_row_one"
+            app:layout_constraintStart_toStartOf="@+id/guideline_col_two"
+            app:layout_constraintBottom_toTopOf="@+id/guideline_row_two"
+            app:layout_constraintEnd_toEndOf="parent" />
+
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/pin_key_7"
             style="@style/NumberPadButton"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="0dp"
             android:text="7"
-            app:layout_constraintBottom_toBottomOf="@+id/bottom_row_guideline"
             app:layout_constraintDimensionRatio="h,1:1"
-            app:layout_constraintStart_toStartOf="@+id/pin_key_1" />
-
+            app:layout_constraintTop_toTopOf="@+id/guideline_row_two"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toTopOf="@+id/guideline_row_three"
+            app:layout_constraintEnd_toStartOf="@+id/guideline_col_one" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/pin_key_8"
             style="@style/NumberPadButton"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="0dp"
             android:text="8"
-            app:layout_constraintBottom_toBottomOf="@+id/bottom_row_guideline"
             app:layout_constraintDimensionRatio="h,1:1"
-            app:layout_constraintStart_toStartOf="@+id/pin_key_2" />
+            app:layout_constraintTop_toTopOf="@+id/guideline_row_two"
+            app:layout_constraintStart_toStartOf="@+id/guideline_col_one"
+            app:layout_constraintBottom_toBottomOf="@+id/guideline_row_three"
+            app:layout_constraintEnd_toStartOf="@+id/guideline_col_two" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/pin_key_9"
             style="@style/NumberPadButton"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="0dp"
             android:text="9"
-            app:layout_constraintBottom_toBottomOf="@+id/bottom_row_guideline"
             app:layout_constraintDimensionRatio="h,1:1"
-            app:layout_constraintStart_toStartOf="@+id/pin_key_3" />
-
-
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/bottom_row_guideline"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            app:layout_constraintGuide_percent="0.75" />
+            app:layout_constraintTop_toTopOf="@+id/guideline_row_two"
+            app:layout_constraintStart_toStartOf="@+id/guideline_col_two"
+            app:layout_constraintBottom_toBottomOf="@+id/guideline_row_three"
+            app:layout_constraintEnd_toEndOf="parent" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/pin_key_0"
             style="@style/NumberPadButton"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="0dp"
             android:fontFamily="@font/titillium_web"
             android:text="0"
-            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintDimensionRatio="h,1:1"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/bottom_row_guideline" />
+            app:layout_constraintTop_toBottomOf="@+id/guideline_row_three"
+            app:layout_constraintStart_toStartOf="@+id/guideline_col_one"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/guideline_col_two" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/pin_key_backspace"
             style="@style/NumberPadButton"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="0dp"
             android:text=""
             app:icon="@drawable/ic_baseline_backspace_24"
@@ -185,8 +220,8 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintDimensionRatio="h,1:1"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="@+id/pin_key_9"
-            app:layout_constraintTop_toBottomOf="@+id/bottom_row_guideline" />
+            app:layout_constraintStart_toStartOf="@+id/guideline_col_two"
+            app:layout_constraintTop_toBottomOf="@+id/guideline_row_three" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
