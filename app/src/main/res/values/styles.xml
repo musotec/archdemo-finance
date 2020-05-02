@@ -3,6 +3,7 @@
     <!-- App theme, that extends our :theme module's theme -->
     <style name="AppTheme" parent="TastyTheme" >
         <!-- Here we would add our customization -->
+        <item name="colorControlActivated">@color/colorAccentOrange</item>
     </style>
 
     <!-- Child theme which overrides values of parent to specify that we do not have an ActionBar -->
