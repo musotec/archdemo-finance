@@ -1,22 +1,27 @@
 package tech.muso.demo.architecture
 
-import androidx.appcompat.app.AppCompatActivity
+// use kotlin android extensions to do findViewById() once, and cache results for us.
+// this also handles loading in all the imports for the view classes
+import kotlinx.android.synthetic.main.activity_main.*
+
 import android.os.Bundle
-import android.view.View
-import android.view.ViewGroup
-import android.widget.FrameLayout
-import tech.muso.demo.theme.ThemeTestFragment
+import androidx.appcompat.app.AppCompatActivity
+import com.google.android.material.tabs.TabLayoutMediator
+import tech.muso.demo.architecture.ui.main.DemoPageAdapter
 
 class MainActivity : AppCompatActivity() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
+        val demoPageAdapter = DemoPageAdapter(this, supportFragmentManager)
+
         super.onCreate(savedInstanceState)
-        FrameLayout(this).apply {
-            id = View.generateViewId() // new id for this layout
-            // attach to activity
-            setContentView(this, ViewGroup.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT))
-            // simple fragment to test and make theme
-            supportFragmentManager.beginTransaction().add(id, ThemeTestFragment()).commit()
-        }
+        setContentView(R.layout.activity_main)
+
+        view_pager.adapter = demoPageAdapter
+        // fixme: update to link to page adapter; make less hard coded
+        val mediator: TabLayoutMediator = TabLayoutMediator(tabs, view_pager) { tab, position ->
+            // onConfigureTab
+            if (position == 0) tab.text = "pin" else tab.text = "theme"
+        }.apply { attach() } // attach() call once set up.
     }
 }

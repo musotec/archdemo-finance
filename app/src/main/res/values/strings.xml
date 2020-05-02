@@ -1,3 +1,5 @@
 <resources>
-    <string name="app_name">Architecture Demo - Finance</string>
+    <string name="prepend_emoji">🍒</string>
+    <string name="app_name">archdemo</string>
+    <string name="sub_name">finance</string>
 </resources>

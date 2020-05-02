@@ -38,6 +38,90 @@
         <item name="shapeAppearanceMediumComponent">@style/AppShapeAppearance.MediumComponent</item>
     </style>
 
+    <style name="TastyTheme" parent="Theme.MaterialComponents">
+        <item name="colorPrimary">#e22222</item>
+        <item name="colorSurface">#0d0d0d</item>
+        <item name="android:statusBarColor">#000000</item>
+        <item name="android:colorBackground">#000000</item>
+        <item name="android:navigationBarColor">#000000</item>
+        <item name="colorSecondary">#90FF2E</item>
+        <!--        <item name="highContrastOrange">#FAB428</item>-->
+        <!--        <item name="highContrastPurple">#4D19FA</item>-->
+        <!--        <item name="highContrastCyan">#5DD9D2</item>-->
+        <item name="colorAccent">#FFFFFF</item>
+
+        <!-- Manually override Snackbars theme, as this is not dark in MaterialComponents
+          despite the DayNight spec... Implementation behind design spec currently. -->
+        <item name="snackbarStyle">@style/snackbar_style_day_night_fix</item>
+        <item name="snackbarButtonStyle">@style/snackbar_button_day_night_fix</item>
+        <item name="snackbarTextViewStyle">@style/snackbar_text_day_night_fix</item>
+    </style>
+
+    <!-- Define a few fixes for the default DayNight theme (upstream UI is always Light) -->
+    <style name="snackbar_style_day_night_fix" parent="@style/Widget.MaterialComponents.Snackbar">
+        <item name="android:background">#2b2b2b</item>
+    </style>
+
+    <style name="snackbar_button_day_night_fix" parent="@style/Widget.MaterialComponents.Button">
+        <item name="backgroundTint">?colorSurface</item>
+        <item name="android:textColor">?colorOnSurface</item>
+    </style>
+
+    <style name="snackbar_text_day_night_fix" parent="@style/Widget.MaterialComponents.Snackbar.TextView">
+        <item name="android:textColor">?colorOnSurface</item>
+    </style>
+
+    <!-- Alternative approach allows us to patch all default instances to override when building -->
+    <style name="Widget.MaterialComponents.Chip.Filter" parent="Base.Widget.MaterialComponents.Chip"
+        tools:override="true">
+        <!-- Must also redefine the normal defaults -->
+        <item name="android:checkable">true</item>
+        <item name="chipIconVisible">false</item>
+        <item name="closeIconVisible">false</item>
+
+        <!-- Now patch any upstream attributes in the default style.
+            It is faster to find and patch anything wrong than to implement a full theme. -->
+        <item name="checkedIcon">@drawable/ic_mtrl_chip_checked_diamond</item>
+        <!-- Here, the bug is that the Chip.Filter sets the icon to be a black check mark drawable,
+            but the parent attribute does not define the internally used "checkedIconTint".
+
+            This creates a problem, since to override the tint in the original, we must either
+            reference their internal drawable, which could change. If we don't override the icon,
+            then the parent theme, which does define a checked icon has a circle background
+            (similar to our diamond one). The result is that the tint will be applied to the circle
+            as well. Which breaks the look of the "checked without background".
+
+            Anyways, they should just override the tint on their Chip.Filter class so I don't have
+            to fix the ?colorOnSurface issue.
+
+            Perhaps they are trying to restructure the code, or it's backlogged. Who knows.
+        -->
+    </style>
+
+    <!-- Define a style for the AppBar text items that will allow multiple TextViews nicely -->
+    <style name="AppBarTitleText">
+        <item name="android:fontFamily">@font/montserrat_bold</item>
+        <item name="android:gravity">center</item>
+        <item name="android:minHeight">?actionBarSize</item>
+        <item name="android:padding">16dp</item>
+        <item name="android:paddingEnd">2sp</item>
+        <item name="android:textAppearance">@style/TextAppearance.Widget.AppCompat.Toolbar.Title</item>
+    </style>
+
+    <!-- Define a style that overrides the start padding for additional text in the AppBar -->
+    <style name="AppBarTitleText.Addendum" parent="AppBarTitleText">
+        <item name="android:paddingStart">0dp</item>
+    </style>
+
+    <!-- Define the base style for our custom number pad buttons -->
+    <style name="NumberPadButton" parent="Widget.MaterialComponents.Button.TextButton">
+        <item name="android:fontFamily">@font/titillium_web</item>
+        <item name="android:textSize">36sp</item>
+        <item name="android:insetTop">0dp</item>
+        <item name="android:insetBottom">0dp</item>
+        <item name="android:padding">0dp</item>
+    </style>
+
     <!--  If the theme color is too much for the TabBar navigation, we can force to white -->
     <style name="AppTabNavigation" parent="Widget.MaterialComponents.TabLayout.Colored">
         <item name="tabTextColor">@color/color_selector_on_primary</item>
