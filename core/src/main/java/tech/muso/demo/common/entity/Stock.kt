@@ -1,5 +1,6 @@
 package tech.muso.demo.common.entity
 
+import androidx.room.*
 import tech.muso.demo.common.valueobject.StockValueObject
 
 /**
@@ -11,17 +12,19 @@ import tech.muso.demo.common.valueobject.StockValueObject
  * This allows for separation from the Value Object variant, which should only contain attributes
  * common across instances, and that do not change after creation. Like ticker symbol, etc.
  */
+@Entity()
 data class Stock(
-    val symbol: String,
+    @PrimaryKey @ColumnInfo(name = "id") val symbol: String,
     val name: String,
-    val fundamentals: Fundamentals,
-    val profile: Profile
+    @Embedded val fundamentals: Fundamentals,
+    @Embedded val profile: Profile
 ) {
 
     var currentPrice: Double = 0.0
     var lastTradeVolume: Double = 0.0 // Double due to partial shares.
 
     // convenient reference of lightweight value object for comparison of non-changing data
+    @Ignore // tell Room not to store this value object
     val valueObject: StockValueObject = StockValueObject(symbol)
 
     /**

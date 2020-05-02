@@ -8,7 +8,8 @@ import tech.muso.demo.database.api.StockDao
 /**
  * Class for testing Dao operations within the :repos module, without a room database (in :database)
  *
- * Note: here we don't need to have the Fake implementation private, as the
+ * Note: here we don't need to have the Fake implementation private, as we will want to test the UI
+ *  against this.
  */
 class FakeStockDao : StockDao {
 
@@ -25,5 +26,13 @@ class FakeStockDao : StockDao {
     }
 
     override fun getStocks(): LiveData<List<Stock>> = stocks
+
+    override fun getStocksByName(search: String): LiveData<List<Stock>> {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun insertAll(stocks: List<Stock>) {
+        this.stocks.value = stocks
+    }
 
 }
