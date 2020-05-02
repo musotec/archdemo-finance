@@ -9,11 +9,24 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import tech.muso.demo.architecture.BuildConfig
 import tech.muso.demo.architecture.R
 import tech.muso.demo.architecture.databinding.FragmentPinEntryBinding
+import tech.muso.demo.architecture.viewmodels.AuthenticationViewModel
 
+/**
+ * A Fragment to show a pin lock and entry when the app opens.
+ */
 class PinEntryFragment() : Fragment() {
+    /**
+     * Create a ViewModel that is tied to the Activity, so that it can be used across fragments,
+     * but that takes in parameters (exampleArgPinLength) such that if two instances were needed
+     * with different parameters they would be treated as different.
+     */
+    private val pinEntryViewModel: AuthenticationViewModel by activityViewModels {
+        AuthenticationViewModel.Factory(4, requireActivity().application)
+    }
 
     // View accessibility is excessive for this demo OnTouchListener
     @SuppressLint("ClickableViewAccessibility")
@@ -58,6 +71,10 @@ class PinEntryFragment() : Fragment() {
                 }
             }
         }
+
+        // attach our ViewModel to the DataBinding class.
+        binding.lifecycleOwner = viewLifecycleOwner // attach lifecycle owner to register draw callbacks
+        binding.viewmodel = pinEntryViewModel // now attach ViewModel for bindings
 
         return root
     }
