@@ -87,7 +87,7 @@ buildscript {
         ]
 
         androidTestLibraries = [
-                "junit:junit:$junit_version",
+                "androidx.test.ext:junit:$annotations_version",
                 "androidx.test:runner:$androidx_test_version",
                 "androidx.test:rules:$androidx_test_version",
 
