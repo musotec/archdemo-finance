@@ -37,19 +37,22 @@
         android:id="@+id/icon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        app:errorState="@{viewmodel.incorrectEntryErrorState}"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/guideline"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/ic_launcher_foreground" />
 
-    <TextView
+    <tech.muso.demo.architecture.view.HiddenPinView
         android:id="@+id/hiddenPin"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="center"
         android:textSize="24sp"
-        android:text="▲▼▲▼"
+        app:pinLength="@{viewmodel.exampleArgPinLength}"
+        app:pinObserver="@{viewmodel.pinObserveInterface}"
+        app:errorState="@{viewmodel.incorrectEntryErrorState}"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/guideline"
         app:layout_constraintStart_toStartOf="parent"
@@ -60,7 +63,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
-        android:text="@{viewmodel.pin}"
+        android:text="@{viewmodel._exposedForDemoPin}"
         app:layout_constraintBottom_toTopOf="@+id/icon"
         app:layout_constraintEnd_toStartOf="@+id/guideline"
         app:layout_constraintStart_toStartOf="parent"
