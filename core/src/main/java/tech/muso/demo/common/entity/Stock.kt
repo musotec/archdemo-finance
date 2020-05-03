@@ -20,7 +20,24 @@ data class Stock(
     @Embedded val profile: Profile
 ) {
 
-    var currentPrice: Double = 0.0
+    companion object {
+        private val UNSET_VALUE = Double.MIN_VALUE
+    }
+
+    var priceChangePercent: Double = UNSET_VALUE
+    var openPrice: Double = UNSET_VALUE
+    var currentPrice: Double = UNSET_VALUE
+        set(value) {
+            // update the percent change
+            if (openPrice != UNSET_VALUE) {
+                priceChangePercent = ((value - openPrice) / openPrice) * 100
+            } else {
+                // or set the open price (i know this isn't how this actually works)
+                openPrice = value
+            }
+            // update backing field
+            field = value
+        }
     var lastTradeVolume: Double = 0.0 // Double due to partial shares.
 
     // convenient reference of lightweight value object for comparison of non-changing data
@@ -47,5 +64,17 @@ data class Stock(
         if (javaClass != other?.javaClass) return false
         other as Stock
         return valueObject == other.valueObject
+    }
+
+    /**
+     * Testing function that allows us to clone the object.
+     * We don't want to structure our code in a way that needs this long term.
+     */
+    fun deepCopy(): Stock {
+        return this.copy().also {
+            it.openPrice = this.openPrice
+            it.currentPrice = this.currentPrice
+            it.priceChangePercent = this.priceChangePercent
+        }
     }
 }

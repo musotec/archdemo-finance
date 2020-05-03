@@ -7,7 +7,7 @@ import tech.muso.demo.repos.api.StockRepo
 import tech.muso.demo.database.test.data.FakeStockDao
 
 /**
- * This Fake version is used for testing.
+ * This Fake version is used for testing (within this module).
  *
  * It should be created by the developer writing the real version to better support Unit Testing.
  *
