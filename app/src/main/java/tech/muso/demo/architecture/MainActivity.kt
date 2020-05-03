@@ -8,20 +8,35 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.tabs.TabLayoutMediator
 import tech.muso.demo.architecture.ui.main.DemoPageAdapter
+import tech.muso.demo.architecture.ui.main.TouchLockSemaphore
 
 class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        val demoPageAdapter = DemoPageAdapter(this, supportFragmentManager)
+        val demoPageAdapter = DemoPageAdapter(this, supportFragmentManager,
+            // Demonstration of Observer pattern with typical Java Style interface callbacks.
+            TouchLockSemaphore(object : TouchLockSemaphore.Listener {
+                override fun onLockChanged(isLocked: Boolean) {
+                    // enable viewpager swipe if not locked.
+                    view_pager.isUserInputEnabled = !isLocked
+                }
+            })
+        )
 
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
         view_pager.adapter = demoPageAdapter
+
         // fixme: update to link to page adapter; make less hard coded
         val mediator: TabLayoutMediator = TabLayoutMediator(tabs, view_pager) { tab, position ->
             // onConfigureTab
-            if (position == 0) tab.text = "pin" else tab.text = "theme"
+            tab.text = when(position) {
+                0 -> "pin"
+                1 -> "stocks"
+                2 -> "theme"
+                else -> "invalid"
+            }
         }.apply { attach() } // attach() call once set up.
     }
 }
