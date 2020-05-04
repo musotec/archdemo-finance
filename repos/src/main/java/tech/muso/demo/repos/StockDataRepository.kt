@@ -1,15 +1,21 @@
 package tech.muso.demo.repos
 
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.liveData
+import kotlinx.coroutines.*
 import tech.muso.demo.common.entity.Stock
 import tech.muso.demo.database.api.StockDao
 import tech.muso.demo.repos.api.StockRepo
+import tech.muso.demo.repos.service.StockService
+import tech.muso.demo.repos.service.StockWebService
 
 /**
- * TODO: This is a placeholder for development of the UI/ViewModel
+ * Stock Data Repository for handling operations for interfacing with the Stock Data.
  */
 class StockDataRepository private constructor(
-    private val stockDao: StockDao
+    private val stockDao: StockDao,
+    private val stockService: StockService,
+    private val defaultDispatcher: CoroutineDispatcher = Dispatchers.Default
 ): StockRepo {
 
     // java style singleton object for this class
@@ -17,17 +23,41 @@ class StockDataRepository private constructor(
         @Volatile
         private var instance: StockDataRepository? = null
 
-        fun getInstance(stockDao: StockDao) =
+        fun getInstance(stockDao: StockDao, stockService: StockService = StockWebService()) =
             instance ?: synchronized(this) {
-                instance ?: StockDataRepository(stockDao).also { instance = it }
+                instance ?: StockDataRepository(stockDao, stockService).also { instance = it }
             }
     }
 
-    override val stocks: LiveData<List<Stock>>
-        get() = stockDao.getStocks()
-
-    override fun filterStocksBySubstring(search: String): LiveData<List<Stock>> {
-        TODO("Not yet implemented")
+    override val stocks: LiveData<List<Stock>> = liveData<List<Stock>> {
+        // get LiveData object from Room Database DAO
+        val stocksLiveData = stockDao.getStocks()
+        emitSource(stocksLiveData)
     }
 
+    override fun filterStocksBySubstring(search: String): LiveData<List<Stock>> {
+        return stockDao.getStocks()
+    }
+
+    /**
+     * Return true if our repository cached data is out of date.
+     */
+    private suspend fun shouldUpdateCache(): Boolean {
+        return true
+    }
+
+    /**
+     * Update our cached list of stocks if necessary.
+     */
+    suspend fun tryUpdateStockCache() {
+        if (shouldUpdateCache()) fetchRecentStocksList()
+    }
+
+    /**
+     * Update the repository data by getting new data from our [StockService].
+     */
+    suspend fun fetchRecentStocksList() {
+        val stocks = stockService.getAllStocks()
+        stockDao.insertAll(stocks)
+    }
 }

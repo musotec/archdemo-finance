@@ -61,7 +61,7 @@ class StocksViewModel internal constructor(
     init {
 
         launchDataLoad {
-            _snackbar.value = "Test Snackbar Action"
+            repository.tryUpdateStockCache()
         }
 
     }
@@ -69,8 +69,7 @@ class StocksViewModel internal constructor(
     fun testLoadingBarFunctionality() {
         Log.d("StockViewModel", "testInvocationFromOnClick()")
 
-
-        launchDataLoad {
+        viewModelScope.launch {
             _snackbar.value = "Test Snackbar Action"
             delay(5000)
         }

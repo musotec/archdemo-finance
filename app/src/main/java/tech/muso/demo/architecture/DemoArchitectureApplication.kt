@@ -2,12 +2,10 @@ package tech.muso.demo.architecture
 
 import android.app.Application
 import android.content.Context
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.FlowPreview
 import tech.muso.demo.architecture.viewmodels.StockListViewModelFactory
-import tech.muso.demo.common.entity.Fundamentals
-import tech.muso.demo.common.entity.Profile
-import tech.muso.demo.common.entity.Stock
-import tech.muso.demo.repos.utils.TestStocksViewModelProvider
-import java.util.*
+import tech.muso.demo.repos.utils.LiveStocksViewModelProvider
 import kotlin.collections.HashMap
 
 /**
@@ -43,37 +41,12 @@ class DemoArchitectureApplication: Application() {
      */
     private val currentStockViewModelProviders: MutableMap<Int, StockListViewModelFactory> = HashMap()
 
-    object StockInjector : TestStocksViewModelProvider() {
+    @ExperimentalCoroutinesApi
+    @FlowPreview
+    object StockInjector : LiveStocksViewModelProvider() {
         // preemptively passing a context because we will need it for the eventual Room database
         override fun provideStocksViewModelFactory(context: Context): StockListViewModelFactory {
-            return StockListViewModelFactory(getStockRepository()).apply {
-                val random = Random()
-
-                val stock =
-                    Stock(
-                        "AMD",
-                        "Advance Micro Devices",
-                        Fundamentals(0, 0.0, 0.0, 0),
-                        Profile("https://logos.m1finance.com/AMD?size=128")
-                    ).apply {
-                        this.currentPrice = 54.20
-                        this.priceChangePercent = 0.0
-                    }
-
-                fun generateNextTick() {
-                    val delta = random.nextGaussian()
-                    stock.currentPrice += delta
-                }
-
-                for(i in 0..50) {
-                    addStock(
-                        // need to do a deep copy because we're being lazy about creating objects
-                        stock.deepCopy().also {
-                            generateNextTick()
-                        }
-                    )
-                }
-            }
+            return StockListViewModelFactory(getStockRepository(context))
         }
     }
 
@@ -84,6 +57,8 @@ class DemoArchitectureApplication: Application() {
      * This returns a specific instance based on a hash mapping of the class of the [selector].
      * All instances of the Factory provide unique singletons.
      */
+    @ExperimentalCoroutinesApi
+    @FlowPreview
     fun getStockViewModelProvider(context: Context, selector: Any): StockListViewModelFactory {
         val key = selector.javaClass.hashCode()
         // return the provider if we already have one defined.
