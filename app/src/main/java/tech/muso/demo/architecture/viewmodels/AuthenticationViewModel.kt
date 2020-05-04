@@ -2,35 +2,21 @@ package tech.muso.demo.architecture.viewmodels
 
 import android.app.Application
 import androidx.lifecycle.*
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.*
 import tech.muso.demo.architecture.BuildConfig
-import tech.muso.demo.architecture.helper.safeLambdaApply
 import tech.muso.demo.architecture.view.HiddenPinView
 import tech.muso.demo.architecture.view.NumberPadEntryView
 import tech.muso.demo.architecture.viewmodels.jobs.PinLoginJob
 import tech.muso.demo.repos.AuthenticationRepository
-import java.lang.ref.WeakReference
 
 // define type aliases to improve code readability
 data class ErrorState(val isError: Boolean, val callback: (() -> Unit) ?= null)
 
-// This pin observe interface is the WRONG way to do data binding and MVVM architecture.
-// Since the business logic is now directly attached to the View. We have overstepped our separation
-// of concerns. The only safe way to do this without leaking, is to use a WeakReference and then
-// trust that we don't leak the view later. The only reason we would need to do something like this
-// is if it was extremely critical that the MutableLiveData object not be exposed to accessors of
-// the ViewModel. This achieves that, but it complicates code, is not necessary here, and is not
-// implemented or commented in a way that would warn other developers to avoid the practice.
-
-// So the code surrounding this logic will be refactored immediately to show how a code review can
-// catch these things early so that code does not get committed that can introduce difficult to
-// diagnose bugs that can remain dormant for a long time. Especially when it is not needed.
-typealias PinObserveInterface = (WeakReference<HiddenPinView>) -> Unit
-
 /**
  * ViewModel that will be used for "authentication" of the pin or any other credentials.
  */
-class AuthenticationViewModel(val exampleArgPinLength: Int) : ViewModel() {
+class AuthenticationViewModel(val exampleArgTotalPinLength: Int) : ViewModel() {
 
     // hidden LiveData so we can observe changes to the pin and perform callbacks when needed
     private var _pin: MutableLiveData<String> = MutableLiveData("")
@@ -44,26 +30,59 @@ class AuthenticationViewModel(val exampleArgPinLength: Int) : ViewModel() {
     val incorrectEntryErrorState: LiveData<ErrorState> get() = _incorrectEntryErrorState
     private val _incorrectEntryErrorState = MutableLiveData(ErrorState(false))
 
+    val _showPinHint: MutableLiveData<Boolean> = MutableLiveData(false)
+
     /**
-     * Declare internal callback lambdas to connect display functionality to the [HiddenPinView]
-     * without exposing our sensitive objects.
+     * Using Kotlin Coroutines Flow, map the previous LiveData and emit a state for our view
+     * that has all the information about the pin validity. This is super easy to chain network
+     * calls with, and we don't have to worry about adding observers, since the resulting LiveData
+     * will handle that when it is bound to the view.
      */
-    private var callbackShowHint: (() -> Unit)? = null
-    private var callbackHideHint: (() -> Unit)? = null
-    private var callbackUpdatePinView: (() -> Unit)? = null
+    val pinValidityState: LiveData<HiddenPinView.PinValidityState> =
+        _showPinHint.asFlow().map { isShowHint ->
+            if (isShowHint) {
+                // fetch valid pin
+                val validPin = AuthenticationRepository.fetchValidPin()
 
-    init {
-        // this binding allows for us to execute our demonstration pin validation job.
-        // in a real application, this job would be something run on the server in the background.
-        _pin.observeForever { pin ->
-            callbackUpdatePinView?.invoke()
+                // test matching values and store index of good and bad matches
+                _pin.value?.let {
+                    val goodList = mutableListOf<Int>()
+                    val badList = mutableListOf<Int>()
 
-            if (pin.length == exampleArgPinLength)
+                    it.forEachIndexed { index, c ->
+                        // exit for excessive index.
+                        if (index >= validPin.length) return@forEachIndexed
+                        if (c == validPin[index]) goodList.add(index) else badList.add(index)
+                    }
+                    // return validity state
+                    return@map HiddenPinView.PinValidityState(true, goodList, badList)
+                }
+            }
+            // else return default state (no highlight)
+            return@map HiddenPinView.PinValidityState()
+        }.asLiveData()
+
+    val pinViewState: LiveData<HiddenPinView.PinViewState> =
+        _pin.asFlow().map { pin ->
+            // any time the pin updates, hide our previous pin hint
+            _showPinHint.value = false
+
+            // if the pin is full length, run the validation job
+            // in a real application, this job would be something run on the server in the background.
+            if (pin.length == exampleArgTotalPinLength) {
                 validatePinJob.start()
+            }
 
-            callbackShowHint?.invoke()
-        }
-    }
+            // always start this job, we save it (so we can cancel it via the validatePinJob)
+            pendingPinHintJob = viewModelScope.launch {
+                delay(100)          // delay is artificial, but shows cancellation of Jobs
+                _showPinHint.value = true    // if we set this value to false before we execute
+            }
+
+            return@map HiddenPinView.PinViewState(pin.length, exampleArgTotalPinLength)
+        }.asLiveData()
+
+    var pendingPinHintJob: Job? = null
 
     /**
      * Demonstration "network" job. Where we launch a test via our server connection, which would
@@ -71,15 +90,16 @@ class AuthenticationViewModel(val exampleArgPinLength: Int) : ViewModel() {
      */
     private val validatePinJob: PinLoginJob = object : PinLoginJob() {
         override suspend fun doBackgroundWork() {
-            // first hide our hint to add a little suspense
-            callbackHideHint?.invoke()
+            // first hide our hint to add more suspense than 100ms hint wait previously
+            // instead we will wait until onWorkFinished()
+            _showPinHint.postValue(false) // postValue forces LiveData on next ui call
 
             if(!AuthenticationRepository.testPinValidity(_pin.value)) {
                 // from this check we can launch a callback on the viewModelScope
                 // to update the ViewModel on the correct thread (the UI thread)
                 viewModelScope.launch {
                     // this is just to demonstrate concepts, but should be standardized
-                    if (_pin.value?.length == exampleArgPinLength) {
+                    if (_pin.value?.length == exampleArgTotalPinLength) {
                         _incorrectEntryErrorState.value = ErrorState(true) {
                             // when animation is finished, reset the pin value
                             _pin.value = ""
@@ -90,11 +110,12 @@ class AuthenticationViewModel(val exampleArgPinLength: Int) : ViewModel() {
         }
 
         override suspend fun onWorkFinished() {
-            // when the pin has been tested, perform our demo "pin hint" indicator
-            callbackShowHint?.invoke()
+            // when the pin has been tested, perform our demo "pin hint" indicator)
+            _showPinHint.value = true
         }
 
         override suspend fun onJobTimeout() {
+            // todo: demonstrate server timeout & error state handling.
             _pin.value = "tout"
         }
     }
@@ -118,7 +139,7 @@ class AuthenticationViewModel(val exampleArgPinLength: Int) : ViewModel() {
         override fun onNumKeyPress(number: Int) {
             // if already at the maximum pin length, wait for the validation to finish first
             // and ignore the users inputs (purposefully not queued while device "thinking")
-            if (_pin.value?.length ?: 0 >= exampleArgPinLength) {
+            if (_pin.value?.length ?: 0 >= exampleArgTotalPinLength) {
                 return
             }
 
@@ -128,56 +149,6 @@ class AuthenticationViewModel(val exampleArgPinLength: Int) : ViewModel() {
 
         override fun onBackKeyPress() {
             _pin.backspace()
-        }
-    }
-
-    /**
-     * Create a hidden observer that attaches to the PinEntryView,
-     * and updates it with the currently entered pin validity.
-     *
-     * This structure is used so that we do not expose our business logic and our backing pin value.
-     * Instead of keeping the
-     */
-    val pinObserveInterface: PinObserveInterface = { hiddenPinView ->
-        // when our pin view is attached,
-
-        // create a callback to pass the backing pin data (properly) to the hidden pin view
-        callbackUpdatePinView = hiddenPinView.safeLambdaApply {
-            text = _pin.value
-        }
-
-        callbackShowHint = hiddenPinView.safeLambdaApply {
-            // launch on main thread to update UI and allow for suspend function invocation
-            viewModelScope.launch {
-
-                // fetch valid pin
-                val validPin = AuthenticationRepository.fetchValidPin()
-
-                // test matching values and store index of good and bad matches
-                _pin.value?.let {
-                    val goodList = mutableListOf<Int>()
-                    val badList = mutableListOf<Int>()
-
-                    it.forEachIndexed { index, c ->
-                        // exit for excessive index.
-                        if (index >= validPin.length) return@forEachIndexed
-                        if (c == validPin[index]) goodList.add(index) else badList.add(index)
-                    }
-
-                    // send them to the PinEntryView for display
-                    setCorrectIndexList(goodList)
-                    setIncorrectIndexList(badList)
-                }
-            }
-        }
-
-        // and another that will remove it.
-        callbackHideHint = hiddenPinView.safeLambdaApply {
-            viewModelScope.launch {
-                // must update the PinEntryView on the UI thread
-                // viewModelScope is used so that we only perform this when the ViewModel is active
-                clearPinValidityLists()
-            }
         }
     }
 

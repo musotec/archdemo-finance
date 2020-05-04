@@ -3,10 +3,7 @@ package tech.muso.demo.repos
 import androidx.annotation.AnyThread
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 
 /**
  * A mock repository object that provides access for the [AuthenticationViewModel].
@@ -16,10 +13,6 @@ import kotlinx.coroutines.launch
  * This is so that we can create and maintain a single connection across all the
  */
 object AuthenticationRepository {
-
-    class Connection {
-        var test: String = ""
-    }
 
     private val _isAppUnlocked = MutableLiveData<Boolean>(false)
     val isAppUnlocked: LiveData<Boolean>
@@ -34,14 +27,15 @@ object AuthenticationRepository {
     suspend fun testPinValidity(pin: String?): Boolean {
         if (pin == fetchValidPin()) {
             delay(2000)
-            // explicitly update the livedata value on the main thread,
-            // so that we can call this from any other safely
-            CoroutineScope(Dispatchers.Main).launch {
-                // wait a bit before we "unlock"
-                // it is important to note that this does not block the main thread
-                delay(750)
-                _isAppUnlocked.value = true
+            _isAppUnlocked.postValue(true)
+
+            // launch new non-blocking time delay before we set state to "locked"
+            // this is not how you want to do this in a real app, and is just to reset the demo
+            CoroutineScope(Dispatchers.IO).launch {
+                delay(60 * 1000) // delay one minute before we lock
+                _isAppUnlocked.postValue(false)
             }
+
             return true
         } else {
             // delays in this scope however do effectively block the code
@@ -65,6 +59,9 @@ object AuthenticationRepository {
     }
 
     // a real one-shot job might look like this, with callbacks to perform subsequent network calls
+    // we would want to do this for anything that would be too large to hold in LiveData, since all
+    // objects are kept in memory.
+
 //    suspend fun doOneShot(param: String) : Result<String> =
 //        suspendCancellableCoroutine { continuation ->
 //            api.addOnCompleteListener  { result ->

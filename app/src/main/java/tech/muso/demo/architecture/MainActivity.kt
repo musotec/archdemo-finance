@@ -6,9 +6,12 @@ import kotlinx.android.synthetic.main.activity_main.*
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Observer
+import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.tabs.TabLayoutMediator
 import tech.muso.demo.architecture.ui.main.DemoPageAdapter
 import tech.muso.demo.architecture.ui.main.TouchLockSemaphore
+import tech.muso.demo.repos.AuthenticationRepository
 
 class MainActivity : AppCompatActivity() {
 
@@ -38,5 +41,24 @@ class MainActivity : AppCompatActivity() {
                 else -> "invalid"
             }
         }.apply { attach() } // attach() call once set up.
+
+        // null/false/true boolean to avoid recalling code below when already unlocked
+        var prevUnlockState: Boolean? = null
+
+        // observe our authentication state, and when we unlock, move to the stocks tab.
+        AuthenticationRepository.isAppUnlocked.observe(this,
+            Observer<Boolean> { isUnlocked ->
+                if (prevUnlockState == false && isUnlocked) {
+                    Snackbar.make(view_pager, "PIN ENTRY SUCCESS", Snackbar.LENGTH_SHORT).show()
+                    view_pager.setCurrentItem(1, true)
+                }
+                if (prevUnlockState == true && isUnlocked == false) {
+                    Snackbar.make(view_pager, "LOCKED AFTER 60 SECONDS", Snackbar.LENGTH_SHORT).show()
+                    view_pager.setCurrentItem(0, true)
+                }
+
+                prevUnlockState = isUnlocked
+            }
+        )
     }
 }
