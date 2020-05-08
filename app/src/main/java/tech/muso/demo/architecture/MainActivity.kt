@@ -31,14 +31,18 @@ class MainActivity : AppCompatActivity() {
 
         view_pager.adapter = demoPageAdapter
 
-        // fixme: update to link to page adapter; make less hard coded
+        // use mediator to connect viewpager and our empty TabLayout in XML
         val mediator: TabLayoutMediator = TabLayoutMediator(tabs, view_pager) { tab, position ->
             // onConfigureTab
-            tab.text = when(position) {
-                0 -> "pin"
-                1 -> "stocks"
-                2 -> "theme"
-                else -> "invalid"
+            demoPageAdapter.link(tab, position)
+
+            // special case to update our lock icon,
+            // implementation is poor; using comparison to zero index (magic number)
+            if (position == 0) {
+                AuthenticationRepository.isAppUnlocked.observe(this, Observer {
+                    val lockIconResource = if (it) R.drawable.ic_baseline_lock_open_24 else R.drawable.ic_baseline_lock_24
+                    tab.icon = getDrawable(lockIconResource)
+                })
             }
         }.apply { attach() } // attach() call once set up.
 

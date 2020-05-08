@@ -121,6 +121,13 @@ class AuthenticationViewModel(val exampleArgTotalPinLength: Int) : ViewModel() {
     }
 
     /**
+     * Reset the entered pin.
+     */
+    fun clearPin() {
+        _pin.postValue("")
+    }
+
+    /**
      * Helper extension function for the backspace() function.
      * This does the length checking and index coercion to avoid IndexOutOfBoundsExceptions.
      */

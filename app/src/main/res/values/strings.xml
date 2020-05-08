@@ -2,4 +2,7 @@
     <string name="prepend_emoji">🍒</string>
     <string name="app_name">archdemo</string>
     <string name="sub_name">finance</string>
+    <string name="fragment_name_pin">pin</string>
+    <string name="fragment_name_stocks">stocks</string>
+    <string name="fragment_name_theme">theme</string>
 </resources>

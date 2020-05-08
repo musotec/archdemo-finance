@@ -29,7 +29,7 @@
                 android:id="@+id/icon_emoji"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
+                android:layout_marginStart="@dimen/app_bar_cut_size"
                 android:text="@string/prepend_emoji"
                 style="@style/AppBarTitleText" />
 
@@ -50,13 +50,14 @@
         </LinearLayout>
     </com.google.android.material.appbar.AppBarLayout>
 
-    <com.google.android.material.card.MaterialCardView
+    <tech.muso.demo.architecture.view.MaskedCardView
         android:layout_width="match_parent"
         android:layout_height="0dp"
         app:cardPreventCornerOverlap="false"
         app:layout_constraintBottom_toTopOf="@+id/tabs"
         app:layout_constraintTop_toBottomOf="@+id/appBarLayout"
-        android:background="@color/colorBackground">
+        android:background="@color/colorBackground"
+        app:shapeAppearanceOverlay="@style/ShapeAppearance.Card">
 
         <androidx.viewpager2.widget.ViewPager2
             android:id="@+id/view_pager"
@@ -69,7 +70,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/appBarLayout" />
 
-    </com.google.android.material.card.MaterialCardView>
+    </tech.muso.demo.architecture.view.MaskedCardView>
 
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/tabs"

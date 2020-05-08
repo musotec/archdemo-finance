@@ -10,11 +10,13 @@ import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Observer
 import tech.muso.demo.architecture.BuildConfig
 import tech.muso.demo.architecture.R
 import tech.muso.demo.architecture.databinding.FragmentPinEntryBinding
 import tech.muso.demo.architecture.ui.main.TouchLockSemaphore
 import tech.muso.demo.architecture.viewmodels.AuthenticationViewModel
+import tech.muso.demo.repos.AuthenticationRepository
 
 /**
  * A Fragment to show a pin lock and entry when the app opens.
@@ -115,6 +117,10 @@ class PinEntryFragment(private val touchLock: TouchLockSemaphore) : Fragment() {
         // attach our ViewModel to the DataBinding class.
         binding.lifecycleOwner = viewLifecycleOwner // attach lifecycle owner to register draw callbacks
         binding.viewmodel = pinEntryViewModel // now attach ViewModel for bindings
+
+        AuthenticationRepository.isAppUnlocked.observe(viewLifecycleOwner, Observer {
+            pinEntryViewModel.clearPin()
+        })
 
         return root
     }

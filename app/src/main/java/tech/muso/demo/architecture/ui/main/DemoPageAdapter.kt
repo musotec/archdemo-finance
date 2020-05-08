@@ -1,10 +1,16 @@
 package tech.muso.demo.architecture.ui.main
 
+import android.content.Context
+import androidx.annotation.DrawableRes
+import androidx.annotation.StringRes
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentFactory
 import androidx.fragment.app.FragmentManager
 import androidx.viewpager2.adapter.FragmentStateAdapter
+import com.google.android.material.tabs.TabLayout
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import tech.muso.demo.architecture.R
 import tech.muso.demo.architecture.ui.authentication.PinEntryFragment
 import tech.muso.demo.architecture.ui.stocks.StockListFragment
 import tech.muso.demo.theme.ThemeTestFragment
@@ -55,17 +61,74 @@ class DemoPageAdapter(private val activity: FragmentActivity, fm: FragmentManage
         fm.fragmentFactory = FragmentFactoryImpl(viewPagerScrollLock)
     }
 
-    override fun getItemCount(): Int {
-        return 3
-    }
-
-    override fun createFragment(position: Int): Fragment {
-        return when(position) {
-            0 -> PinEntryFragment(viewPagerScrollLock)
-            1 -> StockListFragment()
-            else -> ThemeTestFragment()
+    /**
+     * Link the tab to the position by querying the current list of fragments.
+     */
+    fun link(tab: TabLayout.Tab, position: Int) {
+        getInstance(viewPagerScrollLock)[position].apply {
+            this.link(activity, tab)
         }
     }
 
+    /**
+     * Represent our fragment pages to give them icons or text and link it all up cleanly.
+     */
+    internal data class FragmentPage(
+        val fragment: Fragment,
+        @StringRes val stringRes: Int,
+        @DrawableRes val drawableRes: Int
+    ) {
+        fun link(context: Context, tab: TabLayout.Tab) {
+            // if we can resolve a valid drawable, set the icon for the tab
+            context.getDrawable(drawableRes)?.let {
+                tab.icon = it
+            } ?: run { // otherwise, load the string resource, and set the title
+                tab.text = context.resources.getString(stringRes)
+            }
+        }
+    }
 
+    override fun createFragment(position: Int): Fragment = getInstance(viewPagerScrollLock)[position].fragment
+    override fun getItemCount(): Int = getInstance(viewPagerScrollLock).size
+
+
+    /**
+     * Companion object as a helper for the SectionsPageAdapter class.
+     *
+     * This makes a Singleton of the pages in the adapter that is tied to the adapter object.
+     */
+    companion object {
+        private var pagesInstance: List<FragmentPage>? = null
+
+        @OptIn(ExperimentalCoroutinesApi::class)
+        private fun generateFragmentsList(viewPagerScrollMutex: TouchLockSemaphore): List<FragmentPage> {
+            return ArrayList<FragmentPage>().apply {
+                add(
+                    FragmentPage(
+                        PinEntryFragment(viewPagerScrollMutex),
+                        R.string.fragment_name_pin,
+                        R.drawable.ic_baseline_lock_24)
+                )
+                add(
+                    FragmentPage(
+                        StockListFragment(),
+                        R.string.fragment_name_stocks,
+                        R.drawable.ic_baseline_list_24)
+                )
+                add(
+                    FragmentPage(
+                        ThemeTestFragment(),
+                        R.string.fragment_name_theme,
+                        R.drawable.ic_android_color_control_normal_24dp)
+                )
+            }
+        }
+
+        internal fun getInstance(viewPagerScrollMutex: TouchLockSemaphore): List<FragmentPage> {
+            return pagesInstance ?: generateFragmentsList(viewPagerScrollMutex)
+                .also { generatedFragments ->
+                    pagesInstance = generatedFragments
+                }
+        }
+    }
 }

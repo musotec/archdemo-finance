@@ -11,4 +11,14 @@
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
     </style>
+
+    <!-- For our theme, define a cut in the top left corner to give us more distinct branding -->
+    <style name="ShapeAppearance.Card" parent="ShapeAppearance.MaterialComponents">
+        <item name="cornerFamily">cut</item>
+
+        <item name="cornerSizeTopLeft">@dimen/app_bar_cut_size</item>
+        <item name="cornerSizeTopRight">0dp</item>
+        <item name="cornerSizeBottomRight">0dp</item>
+        <item name="cornerSizeBottomLeft">0dp</item>
+    </style>
 </resources>
