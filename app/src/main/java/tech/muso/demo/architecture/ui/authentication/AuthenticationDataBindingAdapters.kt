@@ -5,7 +5,7 @@ import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import androidx.databinding.BindingAdapter
 import tech.muso.demo.architecture.R
-import tech.muso.demo.architecture.viewmodels.ErrorState
+import tech.muso.demo.architecture.viewmodels.authentication.ErrorState
 
 /**
  * Using data binding, connect the error state contained within this ViewModel to an animation.

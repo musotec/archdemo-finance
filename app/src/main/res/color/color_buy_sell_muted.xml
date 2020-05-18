@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android" xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        app:state_short="true"
+        app:state_long="false"
+        android:color="?colorPrimary" />
+    <item
+        app:state_short="false"
+        app:state_long="false"
+        android:color="?colorOnSurface" />
+    <item
+        app:state_short="false"
+        app:state_long="true"
+        android:color="?colorSecondary" />
+</selector>

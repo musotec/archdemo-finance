@@ -25,15 +25,9 @@ class ViewStockDialogFragment : DialogFragment() {
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         return AlertDialog.Builder(requireActivity()).apply {
             val inflater = requireActivity().layoutInflater
-            val view = inflater.inflate(R.layout.test_layout, null)
+            val view = inflater.inflate(R.layout.view_order_pairs_trade, null)
             setView(view)
             setMessage(arguments?.getString("title"))
-            setNegativeButton("Sell") { dialog, which ->
-
-            }
-            setPositiveButton("Buy") { dialog, which ->
-
-            }
             setCancelable(true)
         }.create()
     }

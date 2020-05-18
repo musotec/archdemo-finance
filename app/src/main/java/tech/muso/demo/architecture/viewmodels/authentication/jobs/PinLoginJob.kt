@@ -1,4 +1,4 @@
-package tech.muso.demo.architecture.viewmodels.jobs
+package tech.muso.demo.architecture.viewmodels.authentication.jobs
 
 import android.util.Log
 import androidx.annotation.UiThread

@@ -22,10 +22,36 @@ data class Stock(
 
     companion object {
         private val UNSET_VALUE = Double.MIN_VALUE
+        @JvmStatic fun getPriceString(double: Double): String {
+            return "%.2f".format(double)
+        }
+
+        /**
+         * Function that allows us to make a deep copy of the object.
+         * We don't want to structure our code in a way that needs this long term.
+         * However, I am doing this to avoid making higher order objects as I don't want to get
+         * crazy with the scope given the current implementation; as this is just a demo.
+         */
+        fun Stock.deepCopy(): Stock {
+            // regular copy() for data class copies only the constructor args
+            return this.copy().also {
+                it.openPrice = this.openPrice
+                it.strikePrice = this.strikePrice
+                it.currentPrice = this.currentPrice
+                it.priceChangePercent = this.priceChangePercent
+                it.amount = this.amount
+                it.lastTradeVolume = this.lastTradeVolume
+            }
+        }
+
     }
 
+    var amount: Int = 0
+    val isShort: Boolean get() = amount < 0
+    val totalPrice: Double get() = amount * currentPrice
     var priceChangePercent: Double = UNSET_VALUE
     var openPrice: Double = UNSET_VALUE
+    var strikePrice: Double = UNSET_VALUE
     var currentPrice: Double = UNSET_VALUE
         set(value) {
             // update the percent change
@@ -38,6 +64,8 @@ data class Stock(
             // update backing field
             field = value
         }
+
+    val profit: Double get() = currentPrice - strikePrice
     var lastTradeVolume: Double = 0.0 // Double due to partial shares.
 
     // convenient reference of lightweight value object for comparison of non-changing data
@@ -64,17 +92,5 @@ data class Stock(
         if (javaClass != other?.javaClass) return false
         other as Stock
         return valueObject == other.valueObject
-    }
-
-    /**
-     * Testing function that allows us to clone the object.
-     * We don't want to structure our code in a way that needs this long term.
-     */
-    fun deepCopy(): Stock {
-        return this.copy().also {
-            it.openPrice = this.openPrice
-            it.currentPrice = this.currentPrice
-            it.priceChangePercent = this.priceChangePercent
-        }
     }
 }

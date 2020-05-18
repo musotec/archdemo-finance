@@ -1,4 +1,4 @@
-package tech.muso.demo.architecture.viewmodels
+package tech.muso.demo.architecture.viewmodels.authentication
 
 import android.app.Application
 import androidx.lifecycle.*
@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.*
 import tech.muso.demo.architecture.BuildConfig
 import tech.muso.demo.architecture.view.HiddenPinView
 import tech.muso.demo.architecture.view.NumberPadEntryView
-import tech.muso.demo.architecture.viewmodels.jobs.PinLoginJob
+import tech.muso.demo.architecture.viewmodels.authentication.jobs.PinLoginJob
 import tech.muso.demo.repos.AuthenticationRepository
 
 // define type aliases to improve code readability
@@ -28,9 +28,13 @@ class AuthenticationViewModel(val exampleArgTotalPinLength: Int) : ViewModel() {
      * This is used to connect Views to [attachErrorAnimationToView] to perform the error animation.
      */
     val incorrectEntryErrorState: LiveData<ErrorState> get() = _incorrectEntryErrorState
-    private val _incorrectEntryErrorState = MutableLiveData(ErrorState(false))
+    private val _incorrectEntryErrorState = MutableLiveData(
+        ErrorState(
+            false
+        )
+    )
 
-    val _showPinHint: MutableLiveData<Boolean> = MutableLiveData(false)
+    private val _showPinHint: MutableLiveData<Boolean> = MutableLiveData(false)
 
     /**
      * Using Kotlin Coroutines Flow, map the previous LiveData and emit a state for our view
@@ -100,10 +104,13 @@ class AuthenticationViewModel(val exampleArgTotalPinLength: Int) : ViewModel() {
                 viewModelScope.launch {
                     // this is just to demonstrate concepts, but should be standardized
                     if (_pin.value?.length == exampleArgTotalPinLength) {
-                        _incorrectEntryErrorState.value = ErrorState(true) {
-                            // when animation is finished, reset the pin value
-                            _pin.value = ""
-                        }
+                        _incorrectEntryErrorState.value =
+                            ErrorState(
+                                true
+                            ) {
+                                // when animation is finished, reset the pin value
+                                _pin.value = ""
+                            }
                     }
                 }
             }

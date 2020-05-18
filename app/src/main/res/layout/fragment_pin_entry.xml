@@ -8,7 +8,7 @@
         <import type="android.view.View" />
         <variable
             name="viewmodel"
-            type="tech.muso.demo.architecture.viewmodels.AuthenticationViewModel" />
+            type="tech.muso.demo.architecture.viewmodels.authentication.AuthenticationViewModel" />
     </data>
 
 <androidx.constraintlayout.widget.ConstraintLayout

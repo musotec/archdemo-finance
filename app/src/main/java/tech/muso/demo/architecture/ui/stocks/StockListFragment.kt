@@ -10,7 +10,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import tech.muso.demo.architecture.DemoArchitectureApplication
 import tech.muso.demo.architecture.databinding.FragmentStocksBinding
-import tech.muso.demo.architecture.viewmodels.StocksViewModel
+import tech.muso.demo.architecture.viewmodels.stocks.StocksViewModel
 
 /**
  * Basic Fragment that just connects the ViewModel to the RecyclerView to display the Stocks.

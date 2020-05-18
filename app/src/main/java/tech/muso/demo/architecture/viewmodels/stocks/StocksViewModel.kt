@@ -1,4 +1,4 @@
-package tech.muso.demo.architecture.viewmodels
+package tech.muso.demo.architecture.viewmodels.stocks
 
 import android.util.Log
 import androidx.lifecycle.*
@@ -6,17 +6,14 @@ import kotlinx.coroutines.*
 import tech.muso.demo.common.entity.Stock
 import tech.muso.demo.repos.StockDataRepository
 
-// Define some aliases for readability
-typealias StockFilter = Int
-const val NoFilter: StockFilter = 0
-
 @ExperimentalCoroutinesApi
 @FlowPreview
 class StocksViewModel internal constructor(
     private val repository: StockDataRepository
 ) : ViewModel() {
 
-    private val _loadingState = MutableLiveData<Boolean>(false)
+    private val _loadingState =
+        MutableLiveData<Boolean>(false)
     /**
      * True if we are currently loading data
      */
@@ -42,12 +39,14 @@ class StocksViewModel internal constructor(
     /**
      * The current filter set applied to the list of stocks.
      */
-    private val filters = MutableLiveData<StockFilter>(0)
+    private val filters =
+        MutableLiveData<StockFilter>(
+            0
+        )
 
     /**
      * LiveData object that contains a list of the current stocks from the database.
-     *
-     * Shown is how the
+     * TODO: implement filters LiveData and filters at the repository level
      */
     val stocks: LiveData<List<Stock>> = filters.switchMap { filter ->
         if (filter == NoFilter) {
@@ -89,25 +88,4 @@ class StocksViewModel internal constructor(
         }
     }
 
-}
-
-
-/**
- * Factory class, which serves up new instances of the to provide the repository singleton to the
- * ViewModels that are created.
- *
- * This way we avoid worrying about multiple instances of the Stocks repository across fragments.
- *
- * e.g. if there were multiple collections of stocks, one for watch list, one for long positions,
- * and a third for short positions; we wouldn't need to manage three different repositories for
- * accessing the same data.
- */
-class StockListViewModelFactory(
-    private val repository: StockDataRepository
-) : ViewModelProvider.NewInstanceFactory() {
-
-    @FlowPreview
-    @ExperimentalCoroutinesApi
-    @Suppress("UNCHECKED_CAST")
-    override fun <T : ViewModel> create(modelClass: Class<T>) = StocksViewModel(repository) as T
 }

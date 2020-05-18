@@ -4,7 +4,7 @@ import android.app.Application
 import android.content.Context
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
-import tech.muso.demo.architecture.viewmodels.StockListViewModelFactory
+import tech.muso.demo.architecture.viewmodels.stocks.ViewModelFactory
 import tech.muso.demo.repos.utils.LiveStocksViewModelProvider
 import kotlin.collections.HashMap
 
@@ -39,14 +39,16 @@ class DemoArchitectureApplication: Application() {
      * want each ViewModelFactory to be able to regenerate the ViewModel and provide the Repository
      * and any necessary parameters.
      */
-    private val currentStockViewModelProviders: MutableMap<Int, StockListViewModelFactory> = HashMap()
+    private val currentStockViewModelProviders: MutableMap<Int, ViewModelFactory> = HashMap()
 
     @ExperimentalCoroutinesApi
     @FlowPreview
     object StockInjector : LiveStocksViewModelProvider() {
         // preemptively passing a context because we will need it for the eventual Room database
-        override fun provideStocksViewModelFactory(context: Context): StockListViewModelFactory {
-            return StockListViewModelFactory(getStockRepository(context))
+        override fun provideStocksViewModelFactory(context: Context): ViewModelFactory {
+            return ViewModelFactory(
+                getStockRepository(context)
+            )
         }
     }
 
@@ -59,7 +61,7 @@ class DemoArchitectureApplication: Application() {
      */
     @ExperimentalCoroutinesApi
     @FlowPreview
-    fun getStockViewModelProvider(context: Context, selector: Any): StockListViewModelFactory {
+    fun getStockViewModelProvider(context: Context, selector: Any): ViewModelFactory {
         val key = selector.javaClass.hashCode()
         // return the provider if we already have one defined.
         if (currentStockViewModelProviders.containsKey(key)) {

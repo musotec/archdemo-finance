@@ -13,6 +13,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import tech.muso.demo.architecture.R
 import tech.muso.demo.architecture.ui.authentication.PinEntryFragment
 import tech.muso.demo.architecture.ui.stocks.StockListFragment
+import tech.muso.demo.architecture.ui.stocks.StockTradePairsFragment
 import tech.muso.demo.theme.ThemeTestFragment
 
 /**
@@ -114,6 +115,13 @@ class DemoPageAdapter(private val activity: FragmentActivity, fm: FragmentManage
                         StockListFragment(),
                         R.string.fragment_name_stocks,
                         R.drawable.ic_baseline_list_24)
+                )
+                add(
+                    FragmentPage(
+                        StockTradePairsFragment(),
+                        R.string.fragment_name_stocks,
+                        R.drawable.ic_baseline_pie_chart_24
+                    )
                 )
                 add(
                     FragmentPage(

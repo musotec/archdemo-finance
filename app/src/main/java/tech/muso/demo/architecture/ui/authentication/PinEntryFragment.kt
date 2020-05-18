@@ -15,7 +15,7 @@ import tech.muso.demo.architecture.BuildConfig
 import tech.muso.demo.architecture.R
 import tech.muso.demo.architecture.databinding.FragmentPinEntryBinding
 import tech.muso.demo.architecture.ui.main.TouchLockSemaphore
-import tech.muso.demo.architecture.viewmodels.AuthenticationViewModel
+import tech.muso.demo.architecture.viewmodels.authentication.AuthenticationViewModel
 import tech.muso.demo.repos.AuthenticationRepository
 
 /**
